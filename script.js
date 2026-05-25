@@ -176,12 +176,15 @@ class Game {
     this.startButton = document.querySelector("#start-button");
     this.startScreen = document.querySelector("#start-screen");
     this.gameScreen = document.querySelector("#game-screen");
+    this.gameOverScreen = document.querySelector("#game-over-screen");
     this.gameContainer = document.querySelector("#game-container");
     this.playerElement = document.querySelector("#player");
     this.batteryElement = document.querySelector("#battery");
     this.scoreElement = document.querySelector("#score");
     this.batteryLevelElement = document.querySelector("#battery-level");
-    this.gameOverMessage = document.querySelector("#game-over-message");
+    this.highScoreElement = document.querySelector("#high-score");
+    this.finalScoreElement = document.querySelector("#final-score");
+    this.gameOverHighScoreElement = document.querySelector("#game-over-high-score");
     this.loseReasonElement = document.querySelector("#lose-reason");
 
     this.keys = {};
@@ -190,6 +193,7 @@ class Game {
     this.isRunning = false;
     this.score = 0;
     this.batteryLevel = 100;
+    this.highScore = 0;
     this.survivalTimer = 0;
     this.scoreTimer = 0;
     this.batteryDrainRate = 8;
@@ -225,6 +229,7 @@ class Game {
 
   start() {
     this.startScreen.classList.add("hidden");
+    this.gameOverScreen.classList.add("hidden");
     this.gameScreen.classList.remove("hidden");
 
     this.player.reset();
@@ -235,7 +240,6 @@ class Game {
     this.scoreTimer = 0;
     this.secondShadowAdded = false;
     this.shadowSpeedIncreased = false;
-    this.gameOverMessage.classList.add("hidden");
     this.resetShadows();
     this.addShadow(40, 40, 120, 95);
     this.updateHud();
@@ -350,7 +354,10 @@ class Game {
   endGame(reason) {
     this.isRunning = false;
     this.loseReasonElement.textContent = reason;
-    this.gameOverMessage.classList.remove("hidden");
+    this.finalScoreElement.textContent = this.score;
+    this.gameOverHighScoreElement.textContent = this.highScore;
+    this.gameScreen.classList.add("hidden");
+    this.gameOverScreen.classList.remove("hidden");
     this.updateHud();
   }
 
@@ -366,6 +373,7 @@ class Game {
   updateHud() {
     this.scoreElement.textContent = this.score;
     this.batteryLevelElement.textContent = Math.ceil(this.batteryLevel);
+    this.highScoreElement.textContent = this.highScore;
   }
 }
 

@@ -25,7 +25,8 @@ body {
   display: none;
 }
 
-.start-screen {
+.start-screen,
+.game-over-screen {
   min-height: 520px;
   border: 1px solid #252a34;
   background: #10131a;
@@ -39,12 +40,16 @@ body {
 
 .start-screen h1 {
   margin: 0;
-  font-size: 52px;
+  max-width: 720px;
+  font-size: 48px;
   letter-spacing: 0;
 }
 
-.start-screen p {
+.start-screen p,
+.game-over-screen p {
   margin: 16px 0 28px;
+  max-width: 560px;
+  line-height: 1.5;
   color: #b8c0cc;
 }
 
@@ -138,25 +143,19 @@ button {
   transform: translate(-50%, -50%);
 }
 
-.game-over-message {
-  position: absolute;
-  left: 50%;
-  top: 50%;
-  transform: translate(-50%, -50%);
-  z-index: 4;
-  width: min(320px, 86%);
-  padding: 24px;
-  text-align: center;
-  background: rgba(10, 12, 18, 0.92);
-  border: 1px solid #3b4354;
-}
-
-.game-over-message h2 {
-  margin: 0 0 10px;
-  font-size: 32px;
-}
-
-.game-over-message p {
+.game-over-screen h2 {
   margin: 0;
-  color: #b8c0cc;
+  font-size: 42px;
+}
+
+.final-stats {
+  display: flex;
+  gap: 28px;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+.final-stats p {
+  margin: 0;
+  color: #f4f7fb;
 }
