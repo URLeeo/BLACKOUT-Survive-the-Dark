@@ -159,3 +159,7 @@ button {
   margin: 0;
   color: #f4f7fb;
 }
+
+.game-over-screen button {
+  margin-top: 28px;
+}

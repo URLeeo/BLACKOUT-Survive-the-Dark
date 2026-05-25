@@ -174,6 +174,7 @@ class Shadow {
 class Game {
   constructor() {
     this.startButton = document.querySelector("#start-button");
+    this.restartButton = document.querySelector("#restart-button");
     this.startScreen = document.querySelector("#start-screen");
     this.gameScreen = document.querySelector("#game-screen");
     this.gameOverScreen = document.querySelector("#game-over-screen");
@@ -211,6 +212,10 @@ class Game {
       this.start();
     });
 
+    this.restartButton.addEventListener("click", () => {
+      this.start();
+    });
+
     window.addEventListener("keydown", (event) => {
       const key = event.key.toLowerCase();
 
@@ -234,6 +239,7 @@ class Game {
 
     this.player.reset();
     this.battery.respawn();
+    this.keys = {};
     this.score = 0;
     this.batteryLevel = 100;
     this.survivalTimer = 0;
