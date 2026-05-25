@@ -120,6 +120,8 @@ class Game {
     this.batteryElement = document.querySelector("#battery");
     this.scoreElement = document.querySelector("#score");
     this.batteryLevelElement = document.querySelector("#battery-level");
+    this.gameOverMessage = document.querySelector("#game-over-message");
+    this.loseReasonElement = document.querySelector("#lose-reason");
 
     this.keys = {};
     this.movementKeys = ["arrowleft", "arrowright", "arrowup", "arrowdown", "a", "d", "w", "s"];
@@ -127,6 +129,9 @@ class Game {
     this.isRunning = false;
     this.score = 0;
     this.batteryLevel = 100;
+    this.survivalTimer = 0;
+    this.scoreTimer = 0;
+    this.batteryDrainRate = 8;
     this.player = new Player(this.playerElement, this.gameContainer);
     this.battery = new Battery(this.batteryElement, this.gameContainer);
 
@@ -162,6 +167,9 @@ class Game {
     this.battery.respawn();
     this.score = 0;
     this.batteryLevel = 100;
+    this.survivalTimer = 0;
+    this.scoreTimer = 0;
+    this.gameOverMessage.classList.add("hidden");
     this.updateHud();
     this.lastTime = performance.now();
     this.isRunning = true;
@@ -178,6 +186,13 @@ class Game {
 
     this.player.move(this.keys, deltaTime);
     this.checkBatteryCollision();
+    this.updateSurvivalScore(deltaTime);
+    this.drainBattery(deltaTime);
+
+    if (this.batteryLevel <= 0) {
+      this.endGame("The flashlight battery died.");
+      return;
+    }
 
     requestAnimationFrame((time) => this.gameLoop(time));
   }
@@ -185,10 +200,34 @@ class Game {
   checkBatteryCollision() {
     if (this.isColliding(this.player.getBounds(), this.battery.getBounds())) {
       this.score += 10;
-      this.batteryLevel = Math.min(this.batteryLevel + 20, 100);
+      this.batteryLevel = Math.min(this.batteryLevel + 25, 100);
       this.battery.respawn();
       this.updateHud();
     }
+  }
+
+  updateSurvivalScore(deltaTime) {
+    this.survivalTimer += deltaTime;
+    this.scoreTimer += deltaTime;
+
+    if (this.scoreTimer >= 1) {
+      this.score += 1;
+      this.scoreTimer -= 1;
+      this.updateHud();
+    }
+  }
+
+  drainBattery(deltaTime) {
+    this.batteryLevel -= this.batteryDrainRate * deltaTime;
+    this.batteryLevel = Math.max(this.batteryLevel, 0);
+    this.updateHud();
+  }
+
+  endGame(reason) {
+    this.isRunning = false;
+    this.loseReasonElement.textContent = reason;
+    this.gameOverMessage.classList.remove("hidden");
+    this.updateHud();
   }
 
   isColliding(firstBox, secondBox) {
@@ -202,7 +241,7 @@ class Game {
 
   updateHud() {
     this.scoreElement.textContent = this.score;
-    this.batteryLevelElement.textContent = this.batteryLevel;
+    this.batteryLevelElement.textContent = Math.ceil(this.batteryLevel);
   }
 }
 
