@@ -95,12 +95,33 @@ button {
   );
 }
 
+.battery {
+  position: absolute;
+  width: 18px;
+  height: 28px;
+  z-index: 1;
+  background: #f7e36d;
+  border: 2px solid #fff7a8;
+  box-shadow: 0 0 16px rgba(247, 227, 109, 0.7);
+}
+
+.battery::before {
+  content: "";
+  position: absolute;
+  left: 4px;
+  top: -6px;
+  width: 6px;
+  height: 4px;
+  background: #fff7a8;
+}
+
 .player {
   position: absolute;
   left: 50%;
   top: 50%;
   width: 24px;
   height: 24px;
+  z-index: 3;
   background: #dffcff;
   box-shadow: 0 0 18px #8df7d2;
   transform: translate(-50%, -50%);

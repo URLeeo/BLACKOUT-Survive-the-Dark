@@ -65,6 +65,49 @@ class Player {
     this.gameContainer.style.setProperty("--flashlight-x", `${centerX}px`);
     this.gameContainer.style.setProperty("--flashlight-y", `${centerY}px`);
   }
+
+  getBounds() {
+    return {
+      x: this.x,
+      y: this.y,
+      width: this.size,
+      height: this.size
+    };
+  }
+}
+
+class Battery {
+  constructor(element, gameContainer) {
+    this.element = element;
+    this.gameContainer = gameContainer;
+    this.width = 18;
+    this.height = 28;
+    this.x = 0;
+    this.y = 0;
+  }
+
+  respawn() {
+    const maxX = this.gameContainer.clientWidth - this.width;
+    const maxY = this.gameContainer.clientHeight - this.height;
+
+    this.x = Math.random() * maxX;
+    this.y = Math.random() * maxY;
+    this.updateElement();
+  }
+
+  updateElement() {
+    this.element.style.left = `${this.x}px`;
+    this.element.style.top = `${this.y}px`;
+  }
+
+  getBounds() {
+    return {
+      x: this.x,
+      y: this.y,
+      width: this.width,
+      height: this.height
+    };
+  }
 }
 
 class Game {
@@ -74,12 +117,18 @@ class Game {
     this.gameScreen = document.querySelector("#game-screen");
     this.gameContainer = document.querySelector("#game-container");
     this.playerElement = document.querySelector("#player");
+    this.batteryElement = document.querySelector("#battery");
+    this.scoreElement = document.querySelector("#score");
+    this.batteryLevelElement = document.querySelector("#battery-level");
 
     this.keys = {};
     this.movementKeys = ["arrowleft", "arrowright", "arrowup", "arrowdown", "a", "d", "w", "s"];
     this.lastTime = 0;
     this.isRunning = false;
+    this.score = 0;
+    this.batteryLevel = 100;
     this.player = new Player(this.playerElement, this.gameContainer);
+    this.battery = new Battery(this.batteryElement, this.gameContainer);
 
     this.addEventListeners();
   }
@@ -110,6 +159,10 @@ class Game {
     this.gameScreen.classList.remove("hidden");
 
     this.player.reset();
+    this.battery.respawn();
+    this.score = 0;
+    this.batteryLevel = 100;
+    this.updateHud();
     this.lastTime = performance.now();
     this.isRunning = true;
     requestAnimationFrame((time) => this.gameLoop(time));
@@ -124,8 +177,32 @@ class Game {
     this.lastTime = currentTime;
 
     this.player.move(this.keys, deltaTime);
+    this.checkBatteryCollision();
 
     requestAnimationFrame((time) => this.gameLoop(time));
+  }
+
+  checkBatteryCollision() {
+    if (this.isColliding(this.player.getBounds(), this.battery.getBounds())) {
+      this.score += 10;
+      this.batteryLevel = Math.min(this.batteryLevel + 20, 100);
+      this.battery.respawn();
+      this.updateHud();
+    }
+  }
+
+  isColliding(firstBox, secondBox) {
+    return (
+      firstBox.x < secondBox.x + secondBox.width &&
+      firstBox.x + firstBox.width > secondBox.x &&
+      firstBox.y < secondBox.y + secondBox.height &&
+      firstBox.y + firstBox.height > secondBox.y
+    );
+  }
+
+  updateHud() {
+    this.scoreElement.textContent = this.score;
+    this.batteryLevelElement.textContent = this.batteryLevel;
   }
 }
 
