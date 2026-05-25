@@ -190,11 +190,12 @@ class Game {
 
     this.keys = {};
     this.movementKeys = ["arrowleft", "arrowright", "arrowup", "arrowdown", "a", "d", "w", "s"];
+    this.highScoreKey = "blackoutHighScore";
     this.lastTime = 0;
     this.isRunning = false;
     this.score = 0;
     this.batteryLevel = 100;
-    this.highScore = 0;
+    this.highScore = this.loadHighScore();
     this.survivalTimer = 0;
     this.scoreTimer = 0;
     this.batteryDrainRate = 8;
@@ -205,6 +206,7 @@ class Game {
     this.battery = new Battery(this.batteryElement, this.gameContainer);
 
     this.addEventListeners();
+    this.updateHud();
   }
 
   addEventListeners() {
@@ -359,12 +361,30 @@ class Game {
 
   endGame(reason) {
     this.isRunning = false;
+    this.updateHighScore();
     this.loseReasonElement.textContent = reason;
     this.finalScoreElement.textContent = this.score;
     this.gameOverHighScoreElement.textContent = this.highScore;
     this.gameScreen.classList.add("hidden");
     this.gameOverScreen.classList.remove("hidden");
     this.updateHud();
+  }
+
+  loadHighScore() {
+    const savedScore = localStorage.getItem(this.highScoreKey);
+
+    if (savedScore === null) {
+      return 0;
+    }
+
+    return Number(savedScore) || 0;
+  }
+
+  updateHighScore() {
+    if (this.score > this.highScore) {
+      this.highScore = this.score;
+      localStorage.setItem(this.highScoreKey, this.highScore);
+    }
   }
 
   isColliding(firstBox, secondBox) {
