@@ -110,6 +110,67 @@ class Battery {
   }
 }
 
+class Shadow {
+  constructor(gameContainer, x, y, speedX, speedY) {
+    this.gameContainer = gameContainer;
+    this.size = 34;
+    this.x = x;
+    this.y = y;
+    this.speedX = speedX;
+    this.speedY = speedY;
+    this.speedMultiplier = 1;
+    this.element = document.createElement("div");
+
+    this.element.classList.add("shadow");
+    this.gameContainer.appendChild(this.element);
+    this.updateElement();
+  }
+
+  move(deltaTime) {
+    this.x += this.speedX * this.speedMultiplier * deltaTime;
+    this.y += this.speedY * this.speedMultiplier * deltaTime;
+    this.bounceFromEdges();
+    this.updateElement();
+  }
+
+  bounceFromEdges() {
+    const maxX = this.gameContainer.clientWidth - this.size;
+    const maxY = this.gameContainer.clientHeight - this.size;
+
+    if (this.x <= 0 || this.x >= maxX) {
+      this.speedX *= -1;
+      this.x = Math.max(0, Math.min(this.x, maxX));
+    }
+
+    if (this.y <= 0 || this.y >= maxY) {
+      this.speedY *= -1;
+      this.y = Math.max(0, Math.min(this.y, maxY));
+    }
+  }
+
+  setSpeedMultiplier(multiplier) {
+    this.speedMultiplier = multiplier;
+  }
+
+  updateElement() {
+    this.element.style.left = `${this.x}px`;
+    this.element.style.top = `${this.y}px`;
+  }
+
+  remove() {
+    this.element.remove();
+  }
+
+  getBounds() {
+    return {
+      x: this.x,
+      y: this.y,
+      width: this.size,
+      height: this.size
+    };
+  }
+}
+
 class Game {
   constructor() {
     this.startButton = document.querySelector("#start-button");
@@ -132,6 +193,9 @@ class Game {
     this.survivalTimer = 0;
     this.scoreTimer = 0;
     this.batteryDrainRate = 8;
+    this.shadows = [];
+    this.secondShadowAdded = false;
+    this.shadowSpeedIncreased = false;
     this.player = new Player(this.playerElement, this.gameContainer);
     this.battery = new Battery(this.batteryElement, this.gameContainer);
 
@@ -169,7 +233,11 @@ class Game {
     this.batteryLevel = 100;
     this.survivalTimer = 0;
     this.scoreTimer = 0;
+    this.secondShadowAdded = false;
+    this.shadowSpeedIncreased = false;
     this.gameOverMessage.classList.add("hidden");
+    this.resetShadows();
+    this.addShadow(40, 40, 120, 95);
     this.updateHud();
     this.lastTime = performance.now();
     this.isRunning = true;
@@ -185,8 +253,16 @@ class Game {
     this.lastTime = currentTime;
 
     this.player.move(this.keys, deltaTime);
+    this.moveShadows(deltaTime);
     this.checkBatteryCollision();
+    this.checkShadowCollision();
+
+    if (!this.isRunning) {
+      return;
+    }
+
     this.updateSurvivalScore(deltaTime);
+    this.updateDifficulty();
     this.drainBattery(deltaTime);
 
     if (this.batteryLevel <= 0) {
@@ -206,14 +282,62 @@ class Game {
     }
   }
 
+  checkShadowCollision() {
+    for (const shadow of this.shadows) {
+      if (this.isColliding(this.player.getBounds(), shadow.getBounds())) {
+        this.endGame("A shadow caught you.");
+        return;
+      }
+    }
+  }
+
+  moveShadows(deltaTime) {
+    for (const shadow of this.shadows) {
+      shadow.move(deltaTime);
+    }
+  }
+
+  resetShadows() {
+    for (const shadow of this.shadows) {
+      shadow.remove();
+    }
+
+    this.shadows = [];
+  }
+
+  addShadow(x, y, speedX, speedY) {
+    const shadow = new Shadow(this.gameContainer, x, y, speedX, speedY);
+
+    if (this.shadowSpeedIncreased) {
+      shadow.setSpeedMultiplier(1.35);
+    }
+
+    this.shadows.push(shadow);
+  }
+
   updateSurvivalScore(deltaTime) {
     this.survivalTimer += deltaTime;
     this.scoreTimer += deltaTime;
 
-    if (this.scoreTimer >= 1) {
+    while (this.scoreTimer >= 1) {
       this.score += 1;
       this.scoreTimer -= 1;
       this.updateHud();
+    }
+  }
+
+  updateDifficulty() {
+    if (this.survivalTimer >= 30 && !this.secondShadowAdded) {
+      this.addShadow(this.gameContainer.clientWidth - 80, this.gameContainer.clientHeight - 80, -105, 130);
+      this.secondShadowAdded = true;
+    }
+
+    if (this.survivalTimer >= 60 && !this.shadowSpeedIncreased) {
+      for (const shadow of this.shadows) {
+        shadow.setSpeedMultiplier(1.35);
+      }
+
+      this.shadowSpeedIncreased = true;
     }
   }
 
