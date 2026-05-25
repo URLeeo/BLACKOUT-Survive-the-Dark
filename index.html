@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>BLACKOUT: Survive the Dark</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <main class="game-shell">
+    <section id="start-screen" class="screen start-screen">
+      <h1>BLACKOUT</h1>
+      <p>Survive the dark. Keep your flashlight alive.</p>
+      <button id="start-button" type="button">Start Game</button>
+    </section>
+
+    <section id="game-screen" class="screen game-screen hidden">
+      <header class="hud">
+        <p>Score: <span id="score">0</span></p>
+        <p>Battery: <span id="battery-level">100</span>%</p>
+        <p>High Score: <span id="high-score">0</span></p>
+      </header>
+
+      <div id="game-container" class="game-container">
+        <div id="flashlight" class="flashlight"></div>
+        <div id="player" class="player"></div>
+      </div>
+    </section>
+  </main>
+
+  <script src="script.js"></script>
+</body>
+</html>

@@ -1,0 +1,107 @@
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  font-family: Arial, sans-serif;
+  color: #f4f7fb;
+  background: #08090d;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.game-shell {
+  width: min(900px, 94vw);
+}
+
+.screen {
+  width: 100%;
+}
+
+.hidden {
+  display: none;
+}
+
+.start-screen {
+  min-height: 520px;
+  border: 1px solid #252a34;
+  background: #10131a;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 32px;
+}
+
+.start-screen h1 {
+  margin: 0;
+  font-size: 52px;
+  letter-spacing: 0;
+}
+
+.start-screen p {
+  margin: 16px 0 28px;
+  color: #b8c0cc;
+}
+
+button {
+  border: 0;
+  padding: 12px 20px;
+  font-size: 16px;
+  color: #061014;
+  background: #8df7d2;
+  cursor: pointer;
+}
+
+.hud {
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 14px 18px;
+  border: 1px solid #252a34;
+  border-bottom: 0;
+  background: #121720;
+}
+
+.hud p {
+  margin: 0;
+}
+
+.game-container {
+  --flashlight-x: 50%;
+  --flashlight-y: 50%;
+  position: relative;
+  height: 560px;
+  overflow: hidden;
+  border: 1px solid #252a34;
+  background: #161a22;
+}
+
+.flashlight {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  pointer-events: none;
+  background: radial-gradient(
+    circle at var(--flashlight-x) var(--flashlight-y),
+    transparent 0,
+    transparent 95px,
+    rgba(0, 0, 0, 0.88) 170px,
+    rgba(0, 0, 0, 0.97) 100%
+  );
+}
+
+.player {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 24px;
+  height: 24px;
+  background: #dffcff;
+  box-shadow: 0 0 18px #8df7d2;
+  transform: translate(-50%, -50%);
+}
