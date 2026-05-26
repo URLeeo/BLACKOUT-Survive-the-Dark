@@ -245,6 +245,54 @@ class Shadow {
   }
 }
 
+class StalkerShadow extends Shadow {
+  constructor(gameContainer, x, y) {
+    super(gameContainer, x, y, 0, 0);
+    this.followSpeed = 92;
+    this.flashlightWakeDistance = 180;
+    this.isAwake = false;
+    this.element.classList.add("stalker-shadow", "sleeping");
+  }
+
+  move(deltaTime, player) {
+    const playerBounds = player.getBounds();
+    const playerCenterX = playerBounds.x + playerBounds.width / 2;
+    const playerCenterY = playerBounds.y + playerBounds.height / 2;
+    const shadowCenterX = this.x + this.width / 2;
+    const shadowCenterY = this.y + this.height / 2;
+    const distance = Math.hypot(playerCenterX - shadowCenterX, playerCenterY - shadowCenterY);
+
+    this.isAwake = distance <= this.flashlightWakeDistance;
+    this.element.classList.toggle("awake", this.isAwake);
+    this.element.classList.toggle("sleeping", !this.isAwake);
+
+    if (!this.isAwake) {
+      this.updateElement();
+      return;
+    }
+
+    if (distance < 1) {
+      return;
+    }
+
+    const directionX = (playerCenterX - shadowCenterX) / distance;
+    const directionY = (playerCenterY - shadowCenterY) / distance;
+
+    this.x += directionX * this.followSpeed * this.speedMultiplier * deltaTime;
+    this.y += directionY * this.followSpeed * this.speedMultiplier * deltaTime;
+    this.keepInsideGameArea();
+    this.updateElement();
+  }
+
+  keepInsideGameArea() {
+    const maxX = this.gameContainer.clientWidth - this.width;
+    const maxY = this.gameContainer.clientHeight - this.height;
+
+    this.x = Math.max(0, Math.min(this.x, maxX));
+    this.y = Math.max(0, Math.min(this.y, maxY));
+  }
+}
+
 class SoundManager {
   constructor() {
     this.audioContext = null;
@@ -361,8 +409,9 @@ class Game {
     this.batteryElement = document.querySelector("#battery");
     this.heartElement = document.querySelector("#heart");
     this.scoreElement = document.querySelector("#score");
-    this.batteryLevelElement = document.querySelector("#battery-level");
     this.healthDisplayElement = document.querySelector("#health-display");
+    this.batteryBarElement = document.querySelector("#battery-bar");
+    this.fearBarElement = document.querySelector("#fear-bar");
     this.spawnTimerElement = document.querySelector("#spawn-timer");
     this.revealCounterElement = document.querySelector("#reveal-counter");
     this.skillCounterElement = document.querySelector("#skill-counter");
@@ -380,6 +429,8 @@ class Game {
     this.batteryLevel = 100;
     this.maxHealth = 3;
     this.health = 1;
+    this.fearLevel = 0;
+    this.enemyIsClose = false;
     this.highScore = this.loadHighScore();
     this.survivalTimer = 0;
     this.scoreTimer = 0;
@@ -455,6 +506,8 @@ class Game {
     this.score = 0;
     this.batteryLevel = 100;
     this.health = 1;
+    this.fearLevel = 0;
+    this.enemyIsClose = false;
     this.survivalTimer = 0;
     this.scoreTimer = 0;
     this.lowBatterySoundTimer = 0;
@@ -472,8 +525,8 @@ class Game {
     this.secondShadowAdded = false;
     this.thirdShadowAdded = false;
     this.shadowSpeedIncreased = false;
-    this.flashlightElement.classList.remove("danger", "overpowered");
-    this.gameContainer.classList.remove("overpowered");
+    this.flashlightElement.classList.remove("danger", "high-fear", "overpowered");
+    this.gameContainer.classList.remove("high-fear", "overpowered");
     this.resetShadows();
     this.addShadow(40, 40, 120, 95);
     this.updateHud();
@@ -506,6 +559,7 @@ class Game {
     this.updateSkill(deltaTime);
     this.updateInvulnerability(deltaTime);
     this.updateEnemyAlert(deltaTime);
+    this.updateFear(deltaTime);
     this.drainBattery(deltaTime);
 
     if (this.batteryLevel <= 0) {
@@ -592,7 +646,7 @@ class Game {
 
   moveShadows(deltaTime) {
     for (const shadow of this.shadows) {
-      shadow.move(deltaTime);
+      shadow.move(deltaTime, this.player);
     }
   }
 
@@ -606,6 +660,17 @@ class Game {
 
   addShadow(x, y, speedX, speedY) {
     const shadow = new Shadow(this.gameContainer, x, y, speedX, speedY);
+
+    if (this.shadowSpeedIncreased) {
+      shadow.setSpeedMultiplier(1.35);
+    }
+
+    this.shadows.push(shadow);
+    this.sound.playShadowSpawn();
+  }
+
+  addStalkerShadow(x, y) {
+    const shadow = new StalkerShadow(this.gameContainer, x, y);
 
     if (this.shadowSpeedIncreased) {
       shadow.setSpeedMultiplier(1.35);
@@ -692,7 +757,7 @@ class Game {
     }
 
     if (this.survivalTimer >= 60 && !this.thirdShadowAdded) {
-      this.addShadow(60, this.gameContainer.clientHeight - 100, 145, -115);
+      this.addStalkerShadow(60, this.gameContainer.clientHeight - 100);
       this.thirdShadowAdded = true;
     }
 
@@ -706,7 +771,9 @@ class Game {
   }
 
   drainBattery(deltaTime) {
-    this.batteryLevel -= this.batteryDrainRate * deltaTime;
+    const fearDrainMultiplier = this.fearLevel >= 75 ? 1.65 : this.fearLevel >= 45 ? 1.25 : 1;
+
+    this.batteryLevel -= this.batteryDrainRate * fearDrainMultiplier * deltaTime;
     this.batteryLevel = Math.max(this.batteryLevel, 0);
     this.playLowBatteryWarning(deltaTime);
     this.updateHud();
@@ -731,6 +798,7 @@ class Game {
       this.flashlightElement.classList.remove("danger");
       this.enemyAlertSoundTimer = 0;
       this.enemyWasClose = false;
+      this.enemyIsClose = false;
       return;
     }
 
@@ -753,6 +821,8 @@ class Game {
 
     this.flashlightElement.classList.toggle("danger", enemyIsClose);
 
+    this.enemyIsClose = enemyIsClose;
+
     if (!enemyIsClose) {
       this.enemyAlertSoundTimer = 0;
       this.enemyWasClose = false;
@@ -772,6 +842,22 @@ class Game {
     }
   }
 
+  updateFear(deltaTime) {
+    if (this.skillActive) {
+      this.fearLevel = Math.max(this.fearLevel - 42 * deltaTime, 0);
+    } else if (this.enemyIsClose) {
+      this.fearLevel = Math.min(this.fearLevel + 18 * deltaTime, 100);
+    } else {
+      this.fearLevel = Math.max(this.fearLevel - 8 * deltaTime, 0);
+    }
+
+    const highFear = this.fearLevel >= 75;
+
+    this.flashlightElement.classList.toggle("high-fear", highFear && !this.skillActive);
+    this.gameContainer.classList.toggle("high-fear", highFear && !this.skillActive);
+    this.updateHud();
+  }
+
   playLowBatteryWarning(deltaTime) {
     if (this.batteryLevel > 25) {
       this.lowBatterySoundTimer = 0;
@@ -788,8 +874,8 @@ class Game {
 
   endGame(reason) {
     this.isRunning = false;
-    this.flashlightElement.classList.remove("danger", "overpowered");
-    this.gameContainer.classList.remove("overpowered");
+    this.flashlightElement.classList.remove("danger", "high-fear", "overpowered");
+    this.gameContainer.classList.remove("high-fear", "overpowered");
     this.sound.playGameOver();
     this.updateHighScore();
     this.loseReasonElement.textContent = reason;
@@ -828,12 +914,24 @@ class Game {
 
   updateHud() {
     this.scoreElement.textContent = this.score;
-    this.batteryLevelElement.textContent = Math.ceil(this.batteryLevel);
-    this.healthDisplayElement.textContent = `${this.health}/${this.maxHealth}`;
+    this.updatePlayerStatus();
     this.updateSpawnTimer();
     this.updateRevealCounter();
     this.updateSkillCounter();
     this.highScoreElement.textContent = this.highScore;
+  }
+
+  updatePlayerStatus() {
+    const roundedFear = Math.ceil(this.fearLevel);
+    const fullHeart = String.fromCharCode(9829);
+    const emptyHeart = String.fromCharCode(9825);
+    const fullHearts = fullHeart.repeat(this.health);
+    const emptyHearts = emptyHeart.repeat(this.maxHealth - this.health);
+
+    this.healthDisplayElement.textContent = `${fullHearts}${emptyHearts}`;
+    this.batteryBarElement.style.width = `${Math.ceil(this.batteryLevel)}%`;
+    this.fearBarElement.style.width = `${roundedFear}%`;
+    this.fearBarElement.parentElement.classList.toggle("high-fear", roundedFear >= 75);
   }
 
   updateRevealCounter() {

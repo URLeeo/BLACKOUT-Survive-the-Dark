@@ -36,6 +36,7 @@ This section is for my Excalidraw sketch.
 - `Player` - stores the player's position and handles movement.
 - `Battery` - appears randomly and can be collected by the player.
 - `Shadow` - moves around the game area and ends the game on collision.
+- `StalkerShadow` - sleeps outside the flashlight circle, then wakes up and follows the player when lit.
 
 ## How to Play
 
@@ -76,6 +77,8 @@ You lose if:
 - Every 5 batteries unlocks the overpowered flashlight skill
 - Player starts with `1/3` health
 - Rare hearts can restore health up to `3/3`
+- Fear rises when shadows are close and makes the battery drain faster at high fear
+- Health, battery, and fear are shown near the player instead of only in the top HUD
 
 Planned score feature:
 
@@ -111,6 +114,7 @@ GitHub Pages link placeholder:
 - Add a pause button.
 - Make shadow spawn positions safer so they do not appear too close to the player.
 - Tune heart spawn chance after playtesting.
+- Tune fear gain/drain after playtesting.
 - Improve mobile support.
 
 ## Commit Milestones
