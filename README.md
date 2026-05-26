@@ -79,6 +79,7 @@ You lose if:
 - Rare hearts can restore health up to `3/3`
 - Fear rises when shadows are close and makes the battery drain faster at high fear
 - Health, battery, and fear are shown near the player instead of only in the top HUD
+- Hits, pickups, high fear, and skill activation have screen/popup feedback
 
 Planned score feature:
 

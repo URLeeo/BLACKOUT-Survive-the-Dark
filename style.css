@@ -150,6 +150,26 @@ button:active {
   box-shadow: inset 0 0 44px rgba(255, 33, 78, 0.45);
 }
 
+.game-container.screen-shake {
+  animation: screenShake 0.26s steps(2, end);
+}
+
+.screen-flash {
+  position: absolute;
+  inset: 0;
+  z-index: 5;
+  pointer-events: none;
+  opacity: 0;
+}
+
+.screen-flash.hit-flash {
+  animation: hitFlash 0.28s ease-out;
+}
+
+.screen-flash.skill-flash {
+  animation: skillFlash 0.42s ease-out;
+}
+
 .flashlight {
   position: absolute;
   inset: 0;
@@ -368,6 +388,29 @@ button:active {
   animation: fearBlink 0.45s steps(2, end) infinite;
 }
 
+.floating-text {
+  position: absolute;
+  z-index: 6;
+  color: #ffffff;
+  font-size: 18px;
+  font-weight: 700;
+  pointer-events: none;
+  text-shadow: 2px 2px 0 #000000, 0 0 10px rgba(255, 255, 255, 0.55);
+  animation: floatUp 0.9s ease-out forwards;
+}
+
+.floating-text.good {
+  color: #8dffd6;
+}
+
+.floating-text.danger {
+  color: #ff7394;
+}
+
+.floating-text.skill {
+  color: #fff29b;
+}
+
 .game-over-screen h2 {
   margin: 0;
   font-size: 42px;
@@ -410,6 +453,61 @@ button:active {
 
   to {
     background-position: 48px 48px;
+  }
+}
+
+@keyframes screenShake {
+  0%,
+  100% {
+    transform: translate(0, 0);
+  }
+
+  25% {
+    transform: translate(-5px, 3px);
+  }
+
+  50% {
+    transform: translate(5px, -3px);
+  }
+
+  75% {
+    transform: translate(-3px, -2px);
+  }
+}
+
+@keyframes hitFlash {
+  0% {
+    opacity: 0.75;
+    background: rgba(255, 35, 70, 0.32);
+  }
+
+  100% {
+    opacity: 0;
+    background: rgba(255, 35, 70, 0);
+  }
+}
+
+@keyframes skillFlash {
+  0% {
+    opacity: 0.7;
+    background: rgba(255, 244, 155, 0.32);
+  }
+
+  100% {
+    opacity: 0;
+    background: rgba(255, 244, 155, 0);
+  }
+}
+
+@keyframes floatUp {
+  0% {
+    opacity: 1;
+    transform: translate(-50%, 0);
+  }
+
+  100% {
+    opacity: 0;
+    transform: translate(-50%, -34px);
   }
 }
 

@@ -405,6 +405,7 @@ class Game {
     this.gameOverScreen = document.querySelector("#game-over-screen");
     this.gameContainer = document.querySelector("#game-container");
     this.flashlightElement = document.querySelector("#flashlight");
+    this.screenFlashElement = document.querySelector("#screen-flash");
     this.playerElement = document.querySelector("#player");
     this.batteryElement = document.querySelector("#battery");
     this.heartElement = document.querySelector("#heart");
@@ -431,6 +432,7 @@ class Game {
     this.health = 1;
     this.fearLevel = 0;
     this.enemyIsClose = false;
+    this.highFearWarningShown = false;
     this.highScore = this.loadHighScore();
     this.survivalTimer = 0;
     this.scoreTimer = 0;
@@ -508,6 +510,7 @@ class Game {
     this.health = 1;
     this.fearLevel = 0;
     this.enemyIsClose = false;
+    this.highFearWarningShown = false;
     this.survivalTimer = 0;
     this.scoreTimer = 0;
     this.lowBatterySoundTimer = 0;
@@ -572,6 +575,9 @@ class Game {
 
   checkBatteryCollision() {
     if (this.isColliding(this.player.getBounds(), this.battery.getBounds())) {
+      const collectedX = this.battery.x + this.battery.width / 2;
+      const collectedY = this.battery.y;
+
       this.score += 10;
       this.batteryLevel = Math.min(this.batteryLevel + 25, 100);
       this.batteryPickupCount += 1;
@@ -579,12 +585,17 @@ class Game {
       this.battery.respawn();
       this.trySpawnHeart();
       this.sound.playBattery();
+      this.showPopup("+10", collectedX, collectedY, "good");
 
       if (this.batteryPickupCount % 3 === 0) {
         this.revealShadows();
       }
 
       if (this.skillPickupCount >= this.skillBatteryGoal) {
+        if (!this.skillReady) {
+          this.showPopup("SKILL READY", this.player.x + this.player.width / 2, this.player.y - 18, "skill");
+        }
+
         this.skillReady = true;
         this.skillPickupCount = this.skillBatteryGoal;
       }
@@ -613,6 +624,7 @@ class Game {
 
     if (this.isColliding(this.player.getBounds(), this.heart.getBounds())) {
       this.health = Math.min(this.health + 1, this.maxHealth);
+      this.showPopup("+1 HEART", this.heart.x + this.heart.width / 2, this.heart.y, "good");
       this.heart.hide();
       this.sound.playHeal();
       this.updateHud();
@@ -634,6 +646,9 @@ class Game {
     this.hitInvulnerableTime = 1.4;
     this.playerElement.classList.add("hurt");
     this.sound.playHit();
+    this.shakeScreen();
+    this.flashScreen("hit-flash");
+    this.showPopup("-1 HEART", this.player.x + this.player.width / 2, this.player.y - 18, "danger");
 
     if (this.health <= 0) {
       this.health = 0;
@@ -706,6 +721,8 @@ class Game {
     this.gameContainer.classList.add("overpowered");
     this.revealShadows();
     this.sound.playSkill();
+    this.flashScreen("skill-flash");
+    this.showPopup("OVERPOWERED", this.player.x + this.player.width / 2, this.player.y - 20, "skill");
     this.updateHud();
   }
 
@@ -855,7 +872,43 @@ class Game {
 
     this.flashlightElement.classList.toggle("high-fear", highFear && !this.skillActive);
     this.gameContainer.classList.toggle("high-fear", highFear && !this.skillActive);
+
+    if (highFear && !this.highFearWarningShown && !this.skillActive) {
+      this.highFearWarningShown = true;
+      this.showPopup("FEAR RISING", this.player.x + this.player.width / 2, this.player.y - 20, "danger");
+    }
+
+    if (!highFear) {
+      this.highFearWarningShown = false;
+    }
+
     this.updateHud();
+  }
+
+  showPopup(text, x, y, type) {
+    const popup = document.createElement("div");
+
+    popup.className = `floating-text ${type}`;
+    popup.textContent = text;
+    popup.style.left = `${x}px`;
+    popup.style.top = `${y}px`;
+    this.gameContainer.appendChild(popup);
+
+    setTimeout(() => {
+      popup.remove();
+    }, 950);
+  }
+
+  shakeScreen() {
+    this.gameContainer.classList.remove("screen-shake");
+    void this.gameContainer.offsetWidth;
+    this.gameContainer.classList.add("screen-shake");
+  }
+
+  flashScreen(className) {
+    this.screenFlashElement.classList.remove("hit-flash", "skill-flash");
+    void this.screenFlashElement.offsetWidth;
+    this.screenFlashElement.classList.add(className);
   }
 
   playLowBatteryWarning(deltaTime) {
