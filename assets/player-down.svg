@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="52" height="44" viewBox="0 0 52 44" role="img" aria-label="Pixel player facing down">
+  <rect width="52" height="44" fill="none"/>
+  <path d="M15 17h22v19H15z" fill="#202b2f"/>
+  <path d="M18 20h16v13H18z" fill="#55646a"/>
+  <path d="M18 6h18v17H18z" fill="#f0c090"/>
+  <path d="M15 8h5V5h16v7h3v6h-4v-4H20v4h-5z" fill="#402419"/>
+  <path d="M21 15h3v4h-3zM31 15h3v4h-3z" fill="#15161b"/>
+  <path d="M25 21h6v3h-6z" fill="#7d4632"/>
+  <path d="M12 23h7v9h-7zM34 23h7v9h-7z" fill="#f0c090"/>
+  <path d="M10 34h12v5H10zM31 34h12v5H31z" fill="#111317"/>
+  <path d="M16 39h22v3H16z" fill="#000" opacity=".35"/>
+</svg>

@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="72" height="62" viewBox="0 0 72 62" role="img" aria-label="Shadow enemy">
+  <rect width="72" height="62" fill="none"/>
+  <path d="M18 44c-7-4-11-12-9-21C11 12 21 6 34 7c13 1 24 9 27 22 3 14-5 25-19 27-9 1-17-1-24-12z" fill="#020307"/>
+  <path d="M12 42c-8 3-10 9-9 15 5-5 10-6 16-4z" fill="#020307"/>
+  <path d="M53 42c7 1 11 5 13 11 1-8-2-14-9-18z" fill="#020307"/>
+  <path d="M15 21c-8-2-13 1-15 8 6-4 11-4 17 1z" fill="#020307"/>
+  <path d="M44 9c7-8 16-9 25-3-9 1-15 5-18 13z" fill="#020307"/>
+  <path d="M22 27l10 5-12 4z" fill="#202435"/>
+  <path d="M48 27l-10 5 12 4z" fill="#202435"/>
+  <path d="M24 40c8 7 19 7 27-1-7 13-21 14-27 1z" fill="#202435"/>
+  <path d="M29 43h4v4h-4zM39 44h4v4h-4z" fill="#020307"/>
+</svg>

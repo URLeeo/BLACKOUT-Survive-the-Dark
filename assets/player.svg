@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="52" height="44" viewBox="0 0 52 44" role="img" aria-label="Pixel player holding flashlight">
+  <rect width="52" height="44" fill="none"/>
+  <path d="M14 17h18v18H14z" fill="#202b2f"/>
+  <path d="M17 20h12v12H17z" fill="#55646a"/>
+  <path d="M18 6h14v15H18z" fill="#f0c090"/>
+  <path d="M15 9h5V6h14v7h-3v5H18v-4h-3z" fill="#402419"/>
+  <path d="M29 11h3v6h-3z" fill="#f0c090"/>
+  <path d="M25 13h3v4h-3z" fill="#17171c"/>
+  <path d="M13 34h9v5h-9z" fill="#111317"/>
+  <path d="M25 34h9v5h-9z" fill="#111317"/>
+  <path d="M30 24h7v7h-7z" fill="#f0c090"/>
+  <path d="M36 23h10v9H36z" fill="#f6e76a"/>
+  <path d="M45 25h4v5h-4z" fill="#fff6a0"/>
+  <path d="M12 17h4v18h-4z" fill="#111317" opacity=".45"/>
+  <path d="M14 39h21v3H14z" fill="#000" opacity=".35"/>
+</svg>

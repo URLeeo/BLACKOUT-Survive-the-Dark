@@ -5,7 +5,7 @@
 body {
   margin: 0;
   min-height: 100vh;
-  font-family: Arial, sans-serif;
+  font-family: "Courier New", monospace;
   color: #f4f7fb;
   background: #08090d;
   display: flex;
@@ -21,10 +21,6 @@ body {
   width: 100%;
 }
 
-.hidden {
-  display: none;
-}
-
 .start-screen,
 .game-over-screen {
   min-height: 520px;
@@ -36,6 +32,14 @@ body {
   justify-content: center;
   text-align: center;
   padding: 32px;
+}
+
+.hidden {
+  display: none;
+}
+
+.screen.hidden {
+  display: none;
 }
 
 .start-screen h1 {
@@ -60,20 +64,74 @@ button {
   color: #061014;
   background: #8df7d2;
   cursor: pointer;
+  transition: transform 120ms ease, background 120ms ease;
+}
+
+button:hover {
+  background: #a7ffe1;
+  transform: translateY(-2px);
+}
+
+button:active {
+  transform: translateY(0);
 }
 
 .hud {
-  display: flex;
-  justify-content: space-between;
-  gap: 16px;
-  padding: 14px 18px;
+  display: grid;
+  grid-template-columns: repeat(7, minmax(95px, 1fr));
+  gap: 8px;
+  padding: 10px;
   border: 1px solid #252a34;
   border-bottom: 0;
-  background: #121720;
+  background: #080a10;
 }
 
 .hud p {
   margin: 0;
+}
+
+.hud-card {
+  min-height: 58px;
+  padding: 8px 10px;
+  background: linear-gradient(180deg, #1d2331, #101520);
+  border: 1px solid #536073;
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.08), 0 0 10px rgba(0, 0, 0, 0.55);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.hud-label {
+  color: #aeb8c7;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0;
+  text-transform: uppercase;
+}
+
+.hud-value {
+  color: #ffffff;
+  font-size: 24px;
+  font-weight: 700;
+  line-height: 1.1;
+  text-shadow: 2px 2px 0 #000000, 0 0 12px rgba(141, 247, 210, 0.35);
+}
+
+.battery-value {
+  color: #7eff8d;
+}
+
+.health-value {
+  color: #ff7b9c;
+}
+
+.small-value {
+  font-size: 15px;
+}
+
+.spawn-warning {
+  color: #ffdf6e;
+  text-shadow: 0 0 10px rgba(255, 223, 110, 0.85);
 }
 
 .game-container {
@@ -83,7 +141,17 @@ button {
   height: 560px;
   overflow: hidden;
   border: 1px solid #252a34;
-  background: #161a22;
+  background-color: #161a22;
+  background-image: url("assets/floor-tile.svg");
+  background-size: 48px 48px;
+  image-rendering: pixelated;
+  animation: floorDrift 12s linear infinite;
+}
+
+.game-container.overpowered .shadow {
+  filter:
+    drop-shadow(0 0 12px rgba(255, 44, 92, 0.95))
+    drop-shadow(0 0 26px rgba(255, 44, 92, 0.8));
 }
 
 .flashlight {
@@ -91,6 +159,7 @@ button {
   inset: 0;
   z-index: 2;
   pointer-events: none;
+  animation: flashlightFlicker 2.5s steps(4, end) infinite;
   background: radial-gradient(
     circle at var(--flashlight-x) var(--flashlight-y),
     transparent 0,
@@ -100,47 +169,133 @@ button {
   );
 }
 
-.battery {
-  position: absolute;
-  width: 18px;
-  height: 28px;
-  z-index: 1;
-  background: #f7e36d;
-  border: 2px solid #fff7a8;
-  box-shadow: 0 0 16px rgba(247, 227, 109, 0.7);
+.flashlight.danger {
+  background: radial-gradient(
+    circle at var(--flashlight-x) var(--flashlight-y),
+    rgba(255, 40, 70, 0.14) 0,
+    rgba(255, 40, 70, 0.08) 100px,
+    rgba(70, 0, 10, 0.78) 170px,
+    rgba(0, 0, 0, 0.97) 100%
+  );
 }
 
-.battery::before {
-  content: "";
+.flashlight.overpowered {
+  animation: overpoweredPulse 0.35s ease-in-out infinite;
+  background: radial-gradient(
+    circle at var(--flashlight-x) var(--flashlight-y),
+    rgba(255, 255, 210, 0.18) 0,
+    rgba(255, 255, 180, 0.1) 220px,
+    rgba(0, 0, 0, 0.08) 100%
+  );
+}
+
+.battery {
   position: absolute;
-  left: 4px;
-  top: -6px;
-  width: 6px;
-  height: 4px;
-  background: #fff7a8;
+  width: 42px;
+  height: 26px;
+  z-index: 1;
+  background: url("assets/battery.svg") center / contain no-repeat;
+  filter: drop-shadow(0 0 10px rgba(90, 255, 111, 0.65));
+  animation: batteryPulse 1.4s ease-in-out infinite;
+}
+
+.battery::after {
+  content: "battery";
+  position: absolute;
+  left: 50%;
+  top: 24px;
+  transform: translateX(-50%);
+  color: #ffffff;
+  font-size: 14px;
+  font-weight: 700;
+  text-shadow: 2px 2px 0 #000000;
+}
+
+.heart {
+  position: absolute;
+  width: 32px;
+  height: 32px;
+  z-index: 1;
+  filter: drop-shadow(0 0 12px rgba(255, 75, 115, 0.75));
+  animation: heartBeat 1s ease-in-out infinite;
+}
+
+.heart::before {
+  content: "♥";
+  position: absolute;
+  inset: 0;
+  color: #ff4f7e;
+  font-size: 34px;
+  line-height: 32px;
+  text-align: center;
+  text-shadow: 2px 2px 0 #25000b;
 }
 
 .shadow {
   position: absolute;
-  width: 34px;
-  height: 34px;
+  width: 72px;
+  height: 62px;
   z-index: 1;
-  background: #050508;
-  border: 1px solid #36313f;
-  border-radius: 50%;
-  box-shadow: 0 0 22px rgba(0, 0, 0, 0.95);
+  background: url("assets/shadow.svg") center / contain no-repeat;
+  filter: drop-shadow(0 0 16px rgba(0, 0, 0, 0.9));
+  animation: shadowFloat 1.8s ease-in-out infinite;
+}
+
+.shadow.revealed {
+  animation: shadowReveal 0.45s ease-in-out infinite;
+  filter:
+    drop-shadow(0 0 12px rgba(255, 44, 92, 0.95))
+    drop-shadow(0 0 22px rgba(255, 44, 92, 0.75));
 }
 
 .player {
   position: absolute;
   left: 50%;
   top: 50%;
-  width: 24px;
-  height: 24px;
+  width: 52px;
+  height: 44px;
   z-index: 3;
-  background: #dffcff;
-  box-shadow: 0 0 18px #8df7d2;
+  background: url("assets/player.svg") center / contain no-repeat;
+  filter: drop-shadow(0 0 10px rgba(141, 247, 210, 0.85));
   transform: translate(-50%, -50%);
+  animation: playerIdle 1.2s steps(2, end) infinite;
+}
+
+.player.direction-right {
+  background-image: url("assets/player.svg");
+}
+
+.player.direction-left {
+  background-image: url("assets/player-left.svg");
+}
+
+.player.direction-up {
+  background-image: url("assets/player-up.svg");
+}
+
+.player.direction-down {
+  background-image: url("assets/player-down.svg");
+}
+
+.player.moving {
+  animation: playerWalk 0.34s steps(2, end) infinite;
+}
+
+.player.hurt {
+  animation: playerHurt 0.18s steps(2, end) infinite;
+  filter: drop-shadow(0 0 18px rgba(255, 75, 115, 1));
+}
+
+.player::after {
+  content: "P";
+  position: absolute;
+  left: 50%;
+  top: -24px;
+  transform: translateX(-50%);
+  color: #ffffff;
+  font-size: 24px;
+  font-weight: 700;
+  text-shadow: 2px 2px 0 #000000;
 }
 
 .game-over-screen h2 {
@@ -162,4 +317,139 @@ button {
 
 .game-over-screen button {
   margin-top: 28px;
+}
+
+@media (max-width: 760px) {
+  .hud {
+    grid-template-columns: repeat(2, minmax(120px, 1fr));
+  }
+
+  .hud-value {
+    font-size: 20px;
+  }
+
+  .small-value {
+    font-size: 13px;
+  }
+}
+
+@keyframes floorDrift {
+  from {
+    background-position: 0 0;
+  }
+
+  to {
+    background-position: 48px 48px;
+  }
+}
+
+@keyframes flashlightFlicker {
+  0%,
+  100% {
+    opacity: 1;
+  }
+
+  50% {
+    opacity: 0.94;
+  }
+
+  75% {
+    opacity: 0.98;
+  }
+}
+
+@keyframes overpoweredPulse {
+  0%,
+  100% {
+    opacity: 0.82;
+  }
+
+  50% {
+    opacity: 0.55;
+  }
+}
+
+@keyframes batteryPulse {
+  0%,
+  100% {
+    transform: translateY(0);
+    filter: drop-shadow(0 0 8px rgba(90, 255, 111, 0.55));
+  }
+
+  50% {
+    transform: translateY(-3px);
+    filter: drop-shadow(0 0 16px rgba(90, 255, 111, 0.85));
+  }
+}
+
+@keyframes heartBeat {
+  0%,
+  100% {
+    transform: scale(1);
+  }
+
+  50% {
+    transform: scale(1.16);
+  }
+}
+
+@keyframes shadowFloat {
+  0%,
+  100% {
+    transform: translateY(0) scale(1);
+    opacity: 0.92;
+  }
+
+  50% {
+    transform: translateY(-5px) scale(1.04);
+    opacity: 1;
+  }
+}
+
+@keyframes shadowReveal {
+  0%,
+  100% {
+    transform: translateY(0) scale(1);
+    opacity: 1;
+  }
+
+  50% {
+    transform: translateY(-4px) scale(1.08);
+    opacity: 0.78;
+  }
+}
+
+@keyframes playerIdle {
+  0%,
+  100% {
+    filter: drop-shadow(0 0 8px rgba(141, 247, 210, 0.7));
+  }
+
+  50% {
+    filter: drop-shadow(0 0 13px rgba(141, 247, 210, 0.95));
+  }
+}
+
+@keyframes playerWalk {
+  0%,
+  100% {
+    transform: translateY(0);
+    filter: drop-shadow(0 0 8px rgba(141, 247, 210, 0.75));
+  }
+
+  50% {
+    transform: translateY(-3px);
+    filter: drop-shadow(0 0 16px rgba(141, 247, 210, 1));
+  }
+}
+
+@keyframes playerHurt {
+  0%,
+  100% {
+    opacity: 1;
+  }
+
+  50% {
+    opacity: 0.45;
+  }
 }

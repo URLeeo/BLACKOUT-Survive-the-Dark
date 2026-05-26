@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="42" height="26" viewBox="0 0 42 26" role="img" aria-label="Green battery">
+  <rect width="42" height="26" fill="none"/>
+  <rect x="3" y="5" width="32" height="16" fill="#162117"/>
+  <rect x="5" y="7" width="28" height="12" fill="#4ee05f"/>
+  <rect x="33" y="10" width="5" height="6" fill="#bfffc5"/>
+  <rect x="8" y="9" width="20" height="5" fill="#82ff89" opacity=".75"/>
+  <path d="M20 9h3v3h3v3h-3v3h-3v-3h-3v-3h3z" fill="#ffffff"/>
+  <rect x="3" y="5" width="32" height="16" fill="none" stroke="#0b0c10" stroke-width="3"/>
+  <rect x="33" y="9" width="6" height="8" fill="none" stroke="#0b0c10" stroke-width="3"/>
+</svg>

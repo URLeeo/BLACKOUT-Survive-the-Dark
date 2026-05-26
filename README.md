@@ -52,6 +52,7 @@ This section is for my Excalidraw sketch.
 - `A` or `Arrow Left` - move left
 - `S` or `Arrow Down` - move down
 - `D` or `Arrow Right` - move right
+- `Space` - use overpowered flashlight skill when it is ready
 
 ## Objective
 
@@ -71,6 +72,10 @@ You lose if:
 - `+1` score for every second survived
 - `+10` score for collecting a battery
 - High score is saved with `localStorage`
+- Every 3 batteries briefly reveals the shadows
+- Every 5 batteries unlocks the overpowered flashlight skill
+- Player starts with `1/3` health
+- Rare hearts can restore health up to `3/3`
 
 Planned score feature:
 
@@ -103,10 +108,9 @@ GitHub Pages link placeholder:
 
 - Add the `+25` bonus every 30 seconds.
 - Add better wall or room shapes.
-- Add more visual polish to the flashlight and shadows.
-- Add sound effects.
 - Add a pause button.
 - Make shadow spawn positions safer so they do not appear too close to the player.
+- Tune heart spawn chance after playtesting.
 - Improve mobile support.
 
 ## Commit Milestones
