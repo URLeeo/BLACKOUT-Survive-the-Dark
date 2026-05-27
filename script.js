@@ -371,8 +371,8 @@ class SoundManager {
   }
 
   playStep() {
-    this.playTone(155, 0.055, "sine", 0.009, 120);
-    setTimeout(() => this.playTone(95, 0.05, "triangle", 0.008, 75), 35);
+    this.playTone(260, 0.06, "triangle", 0.045, 185);
+    setTimeout(() => this.playTone(190, 0.055, "sine", 0.035, 145), 35);
   }
 
   playReveal() {
@@ -444,6 +444,7 @@ class Game {
     this.shadowSpeedIncreased = false;
     this.lowBatterySoundTimer = 0;
     this.walkSoundTimer = 0;
+    this.wasPlayerMoving = false;
     this.batteryPickupCount = 0;
     this.comboCount = 0;
     this.comboTimer = 0;
@@ -519,6 +520,7 @@ class Game {
     this.scoreTimer = 0;
     this.lowBatterySoundTimer = 0;
     this.walkSoundTimer = 0;
+    this.wasPlayerMoving = false;
     this.batteryPickupCount = 0;
     this.comboCount = 0;
     this.comboTimer = 0;
@@ -831,12 +833,20 @@ class Game {
   updateWalkingSound(isMoving, deltaTime) {
     if (!isMoving) {
       this.walkSoundTimer = 0;
+      this.wasPlayerMoving = false;
+      return;
+    }
+
+    if (!this.wasPlayerMoving) {
+      this.sound.playStep();
+      this.wasPlayerMoving = true;
+      this.walkSoundTimer = 0;
       return;
     }
 
     this.walkSoundTimer += deltaTime;
 
-    if (this.walkSoundTimer >= 0.24) {
+    if (this.walkSoundTimer >= 0.18) {
       this.sound.playStep();
       this.walkSoundTimer = 0;
     }
