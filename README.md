@@ -6,29 +6,9 @@ BLACKOUT is a top-down survival browser game made with HTML, CSS, and vanilla Ja
 
 The player is trapped in a dark building during a blackout. The only safe area is the small flashlight circle around the player. The flashlight battery slowly drains, so the player has to collect batteries, avoid shadow enemies, and survive for as long as possible.
 
-## Excalidraw Drawing Placeholder
+## Game Preview
 
-This section is for my Excalidraw sketch.
-
-```text
-+--------------------------------------------------+
-| BLACKOUT: Survive the Dark                       |
-| Score: 42        Battery: 76%      High: 120     |
-+--------------------------------------------------+
-|                                                  |
-|                  dark game area                  |
-|                                                  |
-|                         shadow                   |
-|                                                  |
-|             flashlight circle                    |
-|                    +-----+                       |
-|                    |  P  |        battery        |
-|                    +-----+                       |
-|                                                  |
-|        shadow                                    |
-|                                                  |
-+--------------------------------------------------+
-```
+<img width="890" height="558" alt="image" src="https://github.com/user-attachments/assets/32dd44aa-f28e-4370-b174-87e48ce0cfbd" />
 
 ## Entities
 
