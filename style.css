@@ -78,7 +78,7 @@ button:active {
 
 .hud {
   display: grid;
-  grid-template-columns: repeat(5, minmax(105px, 1fr));
+  grid-template-columns: repeat(6, minmax(105px, 1fr));
   gap: 8px;
   padding: 10px;
   border: 1px solid #252a34;
@@ -119,6 +119,15 @@ button:active {
 
 .small-value {
   font-size: 15px;
+}
+
+.combo-value {
+  color: #ffdf6e;
+}
+
+.combo-value.combo-hot {
+  animation: comboPulse 0.45s ease-in-out infinite;
+  text-shadow: 2px 2px 0 #000000, 0 0 14px rgba(255, 223, 110, 0.9);
 }
 
 .spawn-warning {
@@ -556,6 +565,17 @@ button:active {
 
   50% {
     opacity: 0.78;
+  }
+}
+
+@keyframes comboPulse {
+  0%,
+  100% {
+    transform: scale(1);
+  }
+
+  50% {
+    transform: scale(1.08);
   }
 }
 

@@ -36,7 +36,7 @@ This section is for my Excalidraw sketch.
 - `Player` - stores the player's position and handles movement.
 - `Battery` - appears randomly and can be collected by the player.
 - `Shadow` - moves around the game area and ends the game on collision.
-- `StalkerShadow` - sleeps outside the flashlight circle, then wakes up and follows the player when lit.
+- `StalkerShadow` - sleeper enemy that wakes up and follows the player when lit by the flashlight. Two spawn later in the run.
 
 ## How to Play
 
@@ -72,6 +72,7 @@ You lose if:
 
 - `+1` score for every second survived
 - `+10` score for collecting a battery
+- Quick battery pickups build combo, which gives more score and more battery energy
 - High score is saved with `localStorage`
 - Every 3 batteries briefly reveals the shadows
 - Every 5 batteries unlocks the overpowered flashlight skill

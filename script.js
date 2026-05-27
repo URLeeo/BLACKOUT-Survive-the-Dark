@@ -410,6 +410,7 @@ class Game {
     this.batteryElement = document.querySelector("#battery");
     this.heartElement = document.querySelector("#heart");
     this.scoreElement = document.querySelector("#score");
+    this.comboDisplayElement = document.querySelector("#combo-display");
     this.healthDisplayElement = document.querySelector("#health-display");
     this.batteryBarElement = document.querySelector("#battery-bar");
     this.fearBarElement = document.querySelector("#fear-bar");
@@ -444,6 +445,9 @@ class Game {
     this.lowBatterySoundTimer = 0;
     this.walkSoundTimer = 0;
     this.batteryPickupCount = 0;
+    this.comboCount = 0;
+    this.comboTimer = 0;
+    this.comboWindow = 5;
     this.skillPickupCount = 0;
     this.skillBatteryGoal = 5;
     this.skillReady = false;
@@ -516,6 +520,8 @@ class Game {
     this.lowBatterySoundTimer = 0;
     this.walkSoundTimer = 0;
     this.batteryPickupCount = 0;
+    this.comboCount = 0;
+    this.comboTimer = 0;
     this.skillPickupCount = 0;
     this.skillReady = false;
     this.skillActive = false;
@@ -561,6 +567,7 @@ class Game {
     this.updateDifficulty();
     this.updateSkill(deltaTime);
     this.updateInvulnerability(deltaTime);
+    this.updateCombo(deltaTime);
     this.updateEnemyAlert(deltaTime);
     this.updateFear(deltaTime);
     this.drainBattery(deltaTime);
@@ -577,15 +584,18 @@ class Game {
     if (this.isColliding(this.player.getBounds(), this.battery.getBounds())) {
       const collectedX = this.battery.x + this.battery.width / 2;
       const collectedY = this.battery.y;
+      const comboMultiplier = this.addBatteryCombo();
+      const scoreGain = 10 * comboMultiplier;
+      const energyGain = 20 + comboMultiplier * 6;
 
-      this.score += 10;
-      this.batteryLevel = Math.min(this.batteryLevel + 25, 100);
+      this.score += scoreGain;
+      this.batteryLevel = Math.min(this.batteryLevel + energyGain, 100);
       this.batteryPickupCount += 1;
       this.skillPickupCount += 1;
       this.battery.respawn();
       this.trySpawnHeart();
       this.sound.playBattery();
-      this.showPopup("+10", collectedX, collectedY, "good");
+      this.showPopup(`+${scoreGain} x${comboMultiplier}`, collectedX, collectedY, "good");
 
       if (this.batteryPickupCount % 3 === 0) {
         this.revealShadows();
@@ -756,6 +766,27 @@ class Game {
     }
   }
 
+  addBatteryCombo() {
+    this.comboCount += 1;
+    this.comboTimer = this.comboWindow;
+
+    return Math.min(this.comboCount, 5);
+  }
+
+  updateCombo(deltaTime) {
+    if (this.comboCount === 0) {
+      return;
+    }
+
+    this.comboTimer -= deltaTime;
+
+    if (this.comboTimer <= 0) {
+      this.comboCount = 0;
+      this.comboTimer = 0;
+      this.updateHud();
+    }
+  }
+
   updateSurvivalScore(deltaTime) {
     this.survivalTimer += deltaTime;
     this.scoreTimer += deltaTime;
@@ -775,6 +806,7 @@ class Game {
 
     if (this.survivalTimer >= 60 && !this.thirdShadowAdded) {
       this.addStalkerShadow(60, this.gameContainer.clientHeight - 100);
+      this.addStalkerShadow(this.gameContainer.clientWidth - 130, 75);
       this.thirdShadowAdded = true;
     }
 
@@ -967,11 +999,19 @@ class Game {
 
   updateHud() {
     this.scoreElement.textContent = this.score;
+    this.updateComboDisplay();
     this.updatePlayerStatus();
     this.updateSpawnTimer();
     this.updateRevealCounter();
     this.updateSkillCounter();
     this.highScoreElement.textContent = this.highScore;
+  }
+
+  updateComboDisplay() {
+    const comboMultiplier = Math.max(1, Math.min(this.comboCount, 5));
+
+    this.comboDisplayElement.textContent = `x${comboMultiplier}`;
+    this.comboDisplayElement.classList.toggle("combo-hot", comboMultiplier > 1);
   }
 
   updatePlayerStatus() {
@@ -1020,7 +1060,7 @@ class Game {
     if (!this.thirdShadowAdded) {
       const timeLeft = Math.max(0, Math.ceil(60 - this.survivalTimer));
 
-      this.spawnTimerElement.textContent = `3rd in ${timeLeft}s`;
+      this.spawnTimerElement.textContent = `sleepers in ${timeLeft}s`;
       this.spawnTimerElement.classList.toggle("spawn-warning", timeLeft <= 5);
       return;
     }
