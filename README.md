@@ -8,7 +8,7 @@ The player is trapped in a dark building during a blackout. The only safe area i
 
 ## Game Preview
 
-<img width="890" height="558" alt="image" src="https://github.com/user-attachments/assets/32dd44aa-f28e-4370-b174-87e48ce0cfbd" />
+<img width="1180" height="777" alt="image" src="https://github.com/user-attachments/assets/29b42972-38fb-4993-8a85-0bee46aa30f1" />
 
 ## Entities
 
